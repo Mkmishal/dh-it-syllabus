@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProLearn | DHIU IT Department Portal</title>
+    <!-- Import a modern Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/logo.jpg">
+    
+    <style>
+        /* --- MODERN CSS VARIABLES --- */
+        :root {
+            --bg-body: #f4f7f6;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary: #4361ee;
+            --primary-hover: #3a53d0;
+            --secondary: #e2e8f0;
+            --accent: #f72585;
+            --success: #38b000;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        /* --- GLOBAL RESET & TYPOGRAPHY --- */
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 0; background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        h1, h2, h3, h4 { margin-top: 0; font-weight: 700; color: #1a202c; }
+
+        /* --- GLASSMORPHISM NAVIGATION --- */
+        .navbar {
+            position: sticky; top: 0; z-index: 1000;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px); /* The frosted glass effect */
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-brand { font-size: 24px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-link {
+            text-decoration: none; color: var(--text-muted); font-weight: 600;
+            padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease;
+        }
+        .nav-link:hover { color: var(--primary); background: var(--secondary); }
+        .nav-link.active { color: white; background: var(--primary); }
+
+        /* --- MAIN LAYOUT & HEADER --- */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-header { text-align: center; margin-bottom: 50px; }
+        .page-header h1 { font-size: 36px; margin-bottom: 10px; }
+        .page-header p { color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
+
+        /* --- TAB BUTTONS (CLASS SELECTOR) --- */
+        .tab-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--card-bg); border: 2px solid transparent; color: var(--text-muted);
+            padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 30px;
+            cursor: pointer; box-shadow: var(--shadow-sm); transition: all 0.3s ease;
+        }
+        .tab-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(67, 97, 238, 0.3); }
+
+        /* --- COURSE CARDS GRID --- */
+        .semester-section { margin-bottom: 50px; }
+        .semester-title { font-size: 28px; border-bottom: 3px solid var(--primary); padding-bottom: 10px; display: inline-block; margin-bottom: 25px; }
+        
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+
+        /* --- MODERN SYLLABUS CARD --- */
+        .course-card {
+            background: var(--card-bg); border-radius: var(--radius-lg); padding: 25px;
+            box-shadow: var(--shadow-md); transition: all 0.3s ease;
+            position: relative; overflow: hidden; border: 1px solid #edf2f7;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .course-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: #cbd5e0; }
+        
+        .week-badge {
+            background: var(--secondary); color: var(--text-main); font-size: 12px; font-weight: 700;
+            padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .card-title { font-size: 20px; margin-bottom: 10px; color: #1a202c; }
+        .card-desc { color: var(--text-muted); font-size: 15px; margin-bottom: 25px; flex-grow: 1; }
+
+        /* --- BUTTONS --- */
+        .action-area { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: none; transition: 0.2s; flex: 1; text-align: center;
+        }
+        .btn-video { background: #ebf4ff; color: #3182ce; }
+        .btn-video:hover { background: #bee3f8; }
+        .btn-quiz { background: var(--primary); color: white; }
+        .btn-quiz:hover { background: var(--primary-hover); }
+        .btn-pdf { background: #fefcbf; color: #b7791f; }
+        .btn-pdf:hover { background: #fef08a; }
+
+        /* Active Week Highlight */
+        .active-week { border: 2px solid var(--success); box-shadow: 0 0 15px rgba(56, 176, 0, 0.15); }
+        .active-week .week-badge { background: var(--success); color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- Frosted Glass Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">🎓 ProLearn IT</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active">Syllabus</a>
+            <a href="software.html" class="nav-link">Software Tutorials</a>
+            <a href="quiz.html" class="nav-link">Quiz</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Modern Header -->
+        <header class="page-header">
+            <h1>Interactive Curriculum</h1>
+            <p>Select your class below to access weekly syllabus portions, video tutorials, and practice quizzes.</p>
+        </header>
+
+        <div class="tab-container" id="btnContainer"></div>
+        <div id="syllabusView"></div>
+    </div>
+
+    <script>
+      // ==========================================
+      // PASTE YOUR GOOGLE SHEET CSV LINKS HERE
+      // ==========================================
+      const SYLLABUS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlAZw1T4scrQLjwdLzJmVWIGY6buQAJptVMCavS33QZFxgJC5rlPSPFEOxQ47iUbRPxxHJfmZba8P6/pub?gid=385691578&single=true&output=csv';
+      const QUIZ_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlAZw1T4scrQLjwdLzJmVWIGY6buQAJptVMCavS33QZFxgJC5rlPSPFEOxQ47iUbRPxxHJfmZba8P6/pub?gid=276592235&single=true&output=csv';
+      
+      let allSyllabusData = [];
+      let allQuizData = [];
+
+      async function fetchAllData() {
+          try {
+              const [syllabusResponse, quizResponse] = await Promise.all([
+                  fetch(SYLLABUS_CSV_URL),
+                  fetch(QUIZ_CSV_URL)
+              ]);
+
+              const syllabusCsvText = await syllabusResponse.text();
+              const quizCsvText = await quizResponse.text();
+
+              allSyllabusData = parseCSV(syllabusCsvText);
+              allQuizData = parseCSV(quizCsvText);
+
+              initializePortal(allSyllabusData);
+          } catch (error) {
+              document.getElementById('btnContainer').innerHTML = "<p style='color:red;'>Error loading data. Ensure you are running a local server.</p>";
+              console.error("Fetch Error:", error);
+          }
+      }
+
+      function parseCSV(csvText) {
+          const rows = csvText.split('\n');
+          rows.shift(); 
+          return rows.map(row => {
+              const regex = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^\,]*))(?:$|\,)/g;
+              let match;
+              let parsedRow = [];
+              while (match = regex.exec(row)) {
+                  if (match[1] !== undefined) parsedRow.push(match[1].replace(/\"\"/g, '\"'));
+                  else if (match[2] !== undefined) parsedRow.push(match[2]);
+                  if (match[0] === '') break;
+              }
+              return parsedRow;
+          });
+      }
+
+      function parseCustomDate(dateStr) {
+        if (!dateStr) return null;
+        dateStr = String(dateStr).trim();
+        let match = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (match) {
+          let day = parseInt(match[1], 10);
+          let month = parseInt(match[2], 10) - 1; 
+          let year = parseInt(match[3], 10);
+          return new Date(year, month, day);
+        }
+        let d = new Date(dateStr);
+        if (!isNaN(d.getTime())) return d;
+        return null; 
+      }
+
+      function initializePortal(data) {
+        const validData = data.filter(row => row[0] && row[0].trim() !== "");
+        const uniqueClasses = [...new Set(validData.map(row => row[0].trim()))];
+        
+        const btnContainer = document.getElementById('btnContainer');
+        btnContainer.innerHTML = ''; // Clear the dummy buttons
+        
+        uniqueClasses.forEach(className => {
+          let btn = document.createElement('button');
+          // UPDATED: Now uses 'tab-btn' instead of 'class-btn'
+          btn.className = 'tab-btn';
+          btn.textContent = className;
+          btn.id = 'btn-' + className.replace(/\s+/g, '-'); 
+          btn.onclick = () => renderCanvases(className);
+          btnContainer.appendChild(btn);
+        });
+
+        // Automatically load the first class tab
+        if(uniqueClasses.length > 0) {
+            renderCanvases(uniqueClasses[0]);
+        }
+      }
+
+      function renderCanvases(selectedClass) {
+        // UPDATED: Remove 'active' class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + selectedClass.replace(/\s+/g, '-')).classList.add('active');
+
+        const classData = allSyllabusData.filter(row => row[0] && row[0].trim() === selectedClass);
+        const semesters = [...new Set(classData.map(row => row[1]))];
+        
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        let html = '';
+        
+        semesters.forEach(sem => {
+            if(!sem) return;
+            // UPDATED: Use the new grid-layout wrappers
+            html += `<div class="semester-section">`;
+            html += `<h2 class="semester-title">${sem}</h2>`;
+            html += `<div class="grid-layout">`;
+            
+            const semesterData = classData.filter(row => row[1] === sem);
+            
+            semesterData.forEach(row => {
+                let week = row[2] || '';
+                let portion = row[3] || 'Untitled Portion';
+                let desc = row[4] || 'No description provided.';
+                let objective = row[5] || '';
+                let videoLink = row[6] || '';
+                let pdfLink = row[7] || '';
+                let startDateStr = row[8]; 
+                let endDateStr = row[9];   
+                
+                let isCurrent = false;
+                
+                if (startDateStr && endDateStr) {
+                    let start = parseCustomDate(startDateStr);
+                    let end = parseCustomDate(endDateStr);
+                    if (start && end) {
+                        end.setHours(23, 59, 59, 999);
+                        if (today >= start && today <= end) {
+                            isCurrent = true;
+                        }
+                    }
+                }
+
+                // UPDATED: Using the new Neumorphic Card classes
+                let cardId = isCurrent ? 'id="active-week-card"' : '';
+                let cardClass = isCurrent ? "course-card active-week" : "course-card";
+                let badgeText = isCurrent ? `📍 CURRENT WEEK ${week}` : `WEEK ${week}`;
+
+                html += `
+                <div ${cardId} class="${cardClass}">
+                    <div>
+                        <span class="week-badge">${badgeText}</span>
+                        <h3 class="card-title">${portion}</h3>
+                        <p class="card-desc">${desc}</p>
+                        <h3 class="card-title">Objective</h3>
+                        <p class="card-desc">${objective}</p>
+                    </div>
+                    <div class="action-area">
+                `;
+
+
+
+                
+                // UPDATED: Using the new flex-growing buttons
+                // if(videoLink.startsWith('http')) {
+                if(videoLink) {
+                    html += `<a href="${videoLink}" target="_blank" class="btn btn-video">▶ Watch</a>`;
+                }
+                
+
+                if(pdfLink.startsWith('http')) {
+                    html += `<a href="${pdfLink}" target="_blank" class="btn btn-pdf">📄 Notes</a>`;
+                }
+                
+                const matchingQuizData = allQuizData.filter(qRow => 
+                    qRow[0] && qRow[0].trim() === selectedClass && 
+                    qRow[1].trim() === sem && 
+                    qRow[2].trim() === week
+                );
+
+                if(matchingQuizData.length > 0) {
+                    html += `<a href="quiz.html?class=${encodeURIComponent(selectedClass)}&sem=${encodeURIComponent(sem)}&week=${encodeURIComponent(week)}" class="btn btn-quiz">📝 Attempt Quiz</a>`;
+                }
+
+                html += `
+                    </div>
+                </div>`; 
+            });
+            html += `</div></div>`; // Close grid-layout and semester-section
+        });
+        
+        document.getElementById('syllabusView').innerHTML = html;
+
+        setTimeout(() => {
+            const activeCard = document.getElementById('active-week-card');
+            if(activeCard) {
+                activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100);
+      }
+
+      fetchAllData();
+    </script>
+</body>
+</html>

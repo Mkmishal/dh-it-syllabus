@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProLearn | Software Video Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- MODERN CSS VARIABLES --- */
+        :root {
+            --bg-body: #f4f7f6;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary: #4361ee;
+            --primary-hover: #3a53d0;
+            --secondary: #e2e8f0;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 0; background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        h1, h2, h3, h4 { margin-top: 0; font-weight: 700; color: #1a202c; }
+
+        /* --- NAVIGATION --- */
+        .navbar {
+            position: sticky; top: 0; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05); padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+        }
+        .nav-brand { font-size: 24px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-link { text-decoration: none; color: var(--text-muted); font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: all 0.3s ease; }
+        .nav-link:hover { color: var(--primary); background: var(--secondary); }
+        .nav-link.active { color: white; background: var(--primary); }
+
+        /* --- HEADER & TABS --- */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-header h1 { font-size: 36px; margin-bottom: 10px; }
+        .page-header p { color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
+
+        .tab-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--card-bg); border: 2px solid transparent; color: var(--text-muted);
+            padding: 12px 24px; font-size: 16px; font-weight: 600; border-radius: 30px;
+            cursor: pointer; box-shadow: var(--shadow-sm); transition: all 0.3s ease;
+        }
+        .tab-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(67, 97, 238, 0.3); }
+
+        /* --- VIDEO CARDS --- */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+
+        .video-card {
+            background: var(--card-bg); border-radius: var(--radius-lg); padding: 25px;
+            box-shadow: var(--shadow-md); transition: all 0.3s ease;
+            position: relative; overflow: hidden; border: 1px solid #edf2f7;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .video-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: #cbd5e0; }
+        
+        .difficulty-badge {
+            font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px; 
+            display: inline-block; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .badge-beginner { background: #e6fffa; color: #2b8a3e; }
+        .badge-intermediate { background: #fff3bf; color: #b0891d; }
+        .badge-advanced { background: #ffe3e3; color: #c92a2a; }
+
+        .card-title { font-size: 20px; margin-bottom: 10px; color: #1a202c; }
+        .card-desc { color: var(--text-muted); font-size: 15px; margin-bottom: 20px; }
+
+        /* --- EXTRA RESOURCES STYLES (NEW) --- */
+        .resources-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; flex-grow: 1; align-content: flex-start; }
+        .resource-pill {
+            font-size: 13px; font-weight: 600; padding: 6px 12px; text-decoration: none;
+            background: #f8fafc; color: #4a5568; border: 1px solid #e2e8f0; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s ease;
+        }
+        .resource-pill:hover { background: #edf2f7; color: var(--primary); border-color: #cbd5e0; transform: translateY(-1px); }
+
+        /* --- WATCH BUTTON --- */
+        .btn-watch {
+            text-decoration: none; padding: 12px 18px; border-radius: 8px; font-weight: 600; font-size: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; 
+            background: #ebf4ff; color: #3182ce; transition: 0.2s; border: none; width: 100%; margin-top: auto;
+        }
+        .btn-watch:hover { background: #3182ce; color: white; }
+
+        #status { text-align: center; color: var(--text-muted); font-style: italic; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">🎓 ProLearn IT</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Syllabus</a>
+            <a href="software.html" class="nav-link active">Software Tutorials</a>
+            <a href="quiz.html" class="nav-link">Quiz</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="page-header">
+            <h1>Software Video Library</h1>
+            <p>Select a software suite below to browse curated video tutorials, practice files, and study guides.</p>
+        </header>
+
+        <div class="tab-container" id="tabContainer">
+            <div id="status">Loading video database...</div>
+        </div>
+
+        <div class="grid-layout" id="videoGrid"></div>
+    </div>
+
+    <script>
+      // ==========================================
+      // PASTE YOUR TSV GOOGLE SHEET LINK HERE
+      // ==========================================
+      const SOFTWARE_TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlAZw1T4scrQLjwdLzJmVWIGY6buQAJptVMCavS33QZFxgJC5rlPSPFEOxQ47iUbRPxxHJfmZba8P6/pub?gid=802708613&single=true&output=tsv';
+      
+      let allVideos = [];
+
+      async function fetchVideos() {
+          try {
+              const res = await fetch(SOFTWARE_TSV_URL);
+              const text = await res.text();
+
+              const rows = text.split('\n').map(row => row.split('\t'));
+              rows.shift(); // Remove header
+
+              allVideos = rows.filter(row => row.length >= 5 && row[0].trim() !== "");
+              initializeTabs(allVideos);
+
+          } catch (error) {
+              document.getElementById('status').innerText = "Database connection error. Ensure you are running a local server.";
+              console.error(error);
+          }
+      }
+
+      function initializeTabs(data) {
+          document.getElementById('status').style.display = 'none';
+          
+          const uniqueSoftware = [...new Set(data.map(row => row[0].trim()))];
+          const tabContainer = document.getElementById('tabContainer');
+          tabContainer.innerHTML = ''; 
+          
+          uniqueSoftware.forEach(softwareName => {
+              let btn = document.createElement('button');
+              btn.className = 'tab-btn';
+              btn.textContent = softwareName;
+              btn.onclick = () => renderVideos(softwareName, btn);
+              tabContainer.appendChild(btn);
+          });
+
+          if (tabContainer.firstChild) tabContainer.firstChild.click();
+      }
+
+      function renderVideos(selectedSoftware, clickedBtn) {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          clickedBtn.classList.add('active');
+
+          const filteredVideos = allVideos.filter(row => row[0].trim() === selectedSoftware);
+          
+          let html = '';
+          filteredVideos.forEach(row => {
+              const difficulty = row[1] ? row[1].trim() : 'General';
+              const title = row[2] ? row[2].trim() : 'Untitled Video';
+              const desc = row[3] ? row[3].trim() : 'No description provided.';
+              const link = row[4] ? row[4].trim() : '#';
+              
+              // NEW: Extract extra resources from the 6th column (Index 5)
+              const extraResourcesRaw = row[5] ? row[5].trim() : '';
+
+              let badgeClass = 'badge-beginner';
+              if(difficulty.toLowerCase().includes('intermediate')) badgeClass = 'badge-intermediate';
+              if(difficulty.toLowerCase().includes('advanced')) badgeClass = 'badge-advanced';
+
+              html += `
+              <div class="video-card">
+                  <div>
+                      <span class="difficulty-badge ${badgeClass}">${difficulty}</span>
+                      <h3 class="card-title">${title}</h3>
+                      <p class="card-desc">${desc}</p>
+                  </div>`;
+              
+              // --- DYNAMIC RESOURCES GENERATION ---
+              html += `<div class="resources-container">`;
+              if (extraResourcesRaw !== '') {
+                  // Split by double pipe || to get each resource
+                  const resourcesList = extraResourcesRaw.split('||');
+                  
+                  resourcesList.forEach(resource => {
+                      // Split by double colon :: to separate Name and URL
+                      const parts = resource.split('::');
+                      if (parts.length === 2) {
+                          const resName = parts[0].trim();
+                          const resUrl = parts[1].trim();
+                          html += `<a href="${resUrl}" target="_blank" class="resource-pill">📎 ${resName}</a>`;
+                      }
+                  });
+              }
+              html += `</div>`; // Close resources-container
+              // ------------------------------------
+
+              html += `
+                  <a href="${link}" target="_blank" class="btn-watch">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                      Watch Tutorial
+                  </a>
+              </div>`;
+          });
+          
+          document.getElementById('videoGrid').innerHTML = html;
+      }
+
+      fetchVideos();
+    </script>
+</body>
+</html>
