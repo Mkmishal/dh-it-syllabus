@@ -37,11 +37,12 @@
         .navbar {
             position: sticky; top: 0; z-index: 1000;
             background: var(--nav-bg);
-            backdrop-filter: blur(10px); /* The frosted glass effect */
+            backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0,0,0,0.05);
             padding: 15px 5%;
             display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap;
         }
         .nav-brand { font-size: 24px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
         .nav-links { display: flex; gap: 20px; }
@@ -106,6 +107,18 @@
         /* Active Week Highlight */
         .active-week { border: 2px solid var(--success); box-shadow: 0 0 15px rgba(56, 176, 0, 0.15); }
         .active-week .week-badge { background: var(--success); color: white; }
+                /* --- SPECIFIC PDF/PRINT STYLES --- */
+        @media print {
+            body { background: white; }
+            /* Hide web-only elements from the printed page */
+            .navbar, .page-header, #submitBtn, .print-btn, .back-btn { display: none !important; }
+            .container { margin: 0; padding: 0; max-width: 100%; }
+            .quiz-wrapper { box-shadow: none; border: none; padding: 0; }
+            /* Prevent a question from being cut in half across two printed pages */
+            .question-card { page-break-inside: avoid; break-inside: avoid; border: 1px solid #ccc; }
+            /* Force browsers to print the background colors for correct/wrong feedback */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
     </style>
 </head>
 <body>
