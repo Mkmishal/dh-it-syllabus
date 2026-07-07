@@ -229,6 +229,10 @@ const QUIZ_JSON_URL = 'https://docs.google.com/spreadsheets/d/1Orsj5P4wGiJj8VcUx
       }
 
 
+
+
+
+
       function parseCustomDate(dateStr) {
         if (!dateStr) return null;
         dateStr = String(dateStr).trim();
@@ -243,6 +247,32 @@ const QUIZ_JSON_URL = 'https://docs.google.com/spreadsheets/d/1Orsj5P4wGiJj8VcUx
         if (!isNaN(d.getTime())) return d;
         return null; 
       }
+
+
+
+            function parseCustomDate(dateStr) {
+          if (!dateStr) return null;
+          dateStr = String(dateStr).trim();
+
+          // FIX 1: Detect Google's hidden JSON Date format e.g., "Date(2026, 6, 15)"
+          let googleDateMatch = dateStr.match(/^Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)$/);
+          if (googleDateMatch) {
+              return new Date(parseInt(googleDateMatch[1]), parseInt(googleDateMatch[2]), parseInt(googleDateMatch[3]));
+          }
+
+          // FIX 2: Detect standard DD/MM/YYYY or DD-MM-YYYY
+          let dmyMatch = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+          if (dmyMatch) {
+              return new Date(parseInt(dmyMatch[3]), parseInt(dmyMatch[2]) - 1, parseInt(dmyMatch[1]));
+          }
+
+          // Fallback
+          let d = new Date(dateStr);
+          if (!isNaN(d.getTime())) return d;
+          return null; 
+      }
+
+
 
       function renderCanvases(selectedClass) {
         // UPDATED: Remove 'active' class from all buttons
