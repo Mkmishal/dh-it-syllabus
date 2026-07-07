@@ -148,64 +148,64 @@
       // ==========================================
       // PASTE YOUR GOOGLE SHEET CSV LINKS HERE
       // ==========================================
-      const SYLLABUS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlAZw1T4scrQLjwdLzJmVWIGY6buQAJptVMCavS33QZFxgJC5rlPSPFEOxQ47iUbRPxxHJfmZba8P6/pub?gid=385691578&single=true&output=csv';
-      const QUIZ_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlAZw1T4scrQLjwdLzJmVWIGY6buQAJptVMCavS33QZFxgJC5rlPSPFEOxQ47iUbRPxxHJfmZba8P6/pub?gid=276592235&single=true&output=csv';
-      
+      // Example of how it should look:
+const SYLLABUS_JSON_URL = 'https://docs.google.com/spreadsheets/d/1Orsj5P4wGiJj8VcUxpYnufPiuHTOqB71lY3v4Crt9QY/gviz/tq?tqx=out:json&gid=385691578';
+
+const QUIZ_JSON_URL = 'https://docs.google.com/spreadsheets/d/1Orsj5P4wGiJj8VcUxpYnufPiuHTOqB71lY3v4Crt9QY/gviz/tq?tqx=out:json&gid=276592235';
+
+
       let allSyllabusData = [];
       let allQuizData = [];
 
       async function fetchAllData() {
           try {
               const [syllabusResponse, quizResponse] = await Promise.all([
-                  fetch(SYLLABUS_CSV_URL),
-                  fetch(QUIZ_CSV_URL)
+                  fetch(SYLLABUS_JSON_URL),
+                  fetch(QUIZ_JSON_URL)
               ]);
 
-              const syllabusCsvText = await syllabusResponse.text();
-              const quizCsvText = await quizResponse.text();
+              const syllabusText = await syllabusResponse.text();
+              const quizText = await quizResponse.text();
 
-              allSyllabusData = parseCSV(syllabusCsvText);
-              allQuizData = parseCSV(quizCsvText);
+              // --- THE BULLETPROOF EXTRACTOR ---
+              // This finds exactly where the JSON starts and ends, ignoring Google's extra text.
+              const extractJson = (text) => {
+                  const start = text.indexOf('{');
+                  const end = text.lastIndexOf('}') + 1;
+                  if (start === -1 || end === 0) {
+                      throw new Error("Could not find data. Is the Google Sheet set to 'Anyone with the link'?");
+                  }
+                  return JSON.parse(text.substring(start, end));
+              };
+
+              const syllabusJson = extractJson(syllabusText);
+              const quizJson = extractJson(quizText);
+              // ---------------------------------
+
+              // Convert the JSON back into our standard array format
+              allSyllabusData = formatGoogleJson(syllabusJson);
+              allQuizData = formatGoogleJson(quizJson);
 
               initializePortal(allSyllabusData);
           } catch (error) {
-              document.getElementById('btnContainer').innerHTML = "<p style='color:red;'>Error loading data. Ensure you are running a local server.</p>";
+              document.getElementById('btnContainer').innerHTML = `
+                <div style="background: #fff5f5; border: 1px solid #fc8181; padding: 15px; border-radius: 8px; color: #c92a2a; text-align: center; max-width: 600px; margin: 0 auto;">
+                    <strong>Connection Error</strong><br>
+                    Could not fetch data from Google Sheets.<br><br>
+                    <em>Developer Fix: Open your Google Sheet, click the blue 'Share' button, and ensure General Access is set to <strong>"Anyone with the link"</strong>.</em>
+                </div>`;
               console.error("Fetch Error:", error);
           }
       }
 
-      function parseCSV(csvText) {
-          const rows = csvText.split('\n');
-          rows.shift(); 
-          return rows.map(row => {
-              const regex = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^\,]*))(?:$|\,)/g;
-              let match;
-              let parsedRow = [];
-              while (match = regex.exec(row)) {
-                  if (match[1] !== undefined) parsedRow.push(match[1].replace(/\"\"/g, '\"'));
-                  else if (match[2] !== undefined) parsedRow.push(match[2]);
-                  if (match[0] === '') break;
-              }
-              return parsedRow;
+      function formatGoogleJson(googleJson) {
+          return googleJson.table.rows.map(row => {
+              // Map through each cell in the row. If it's empty, return "", otherwise return the value as a string.
+              return row.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v) : "");
           });
       }
 
-      function parseCustomDate(dateStr) {
-        if (!dateStr) return null;
-        dateStr = String(dateStr).trim();
-        let match = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-        if (match) {
-          let day = parseInt(match[1], 10);
-          let month = parseInt(match[2], 10) - 1; 
-          let year = parseInt(match[3], 10);
-          return new Date(year, month, day);
-        }
-        let d = new Date(dateStr);
-        if (!isNaN(d.getTime())) return d;
-        return null; 
-      }
-
-      function initializePortal(data) {
+            function initializePortal(data) {
         const validData = data.filter(row => row[0] && row[0].trim() !== "");
         const uniqueClasses = [...new Set(validData.map(row => row[0].trim()))];
         
@@ -226,6 +226,22 @@
         if(uniqueClasses.length > 0) {
             renderCanvases(uniqueClasses[0]);
         }
+      }
+
+
+      function parseCustomDate(dateStr) {
+        if (!dateStr) return null;
+        dateStr = String(dateStr).trim();
+        let match = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (match) {
+          let day = parseInt(match[1], 10);
+          let month = parseInt(match[2], 10) - 1; 
+          let year = parseInt(match[3], 10);
+          return new Date(year, month, day);
+        }
+        let d = new Date(dateStr);
+        if (!isNaN(d.getTime())) return d;
+        return null; 
       }
 
       function renderCanvases(selectedClass) {
